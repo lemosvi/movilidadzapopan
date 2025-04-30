@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>Mapa de Vulnerabilidad ante Inundaciones y Cobertura Vial Operativa, Zapopan, Jalisco</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/multi-style-layer.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="data/LmiteMunicipaldeZapopan_3.js"></script>
+        <script src="data/InundacinporLluviaSevera_4.js"></script>
+        <script src="data/ZonasHistricasdeInundacin_5.js"></script>
+        <script src="data/RiesgoAltodeInundacin_6.js"></script>
+        <script src="data/Vulnerabilidadfsicaanteinundaciones_7.js"></script>
+        <script src="data/Corredor_8.js"></script>
+        <script src="data/Crucero_9.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:false, maxZoom:28, minZoom:1
+        }).fitBounds([[20.624742523737726,-103.50241145332052],[20.755801696360468,-103.32159210593228]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var title = new L.Control({'position':'bottomright'});
+        title.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+        };
+        title.update = function () {
+            this._div.innerHTML = '<h2>Mapa de Vulnerabilidad ante Inundaciones y Cobertura Vial Operativa, Zapopan, Jalisco</h2>';
+        };
+        title.addTo(map);
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_dem_0');
+        map.getPane('pane_dem_0').style.zIndex = 400;
+        var img_dem_0 = 'data/dem_0.png';
+        var img_bounds_dem_0 = [[20.581709985496484,-103.66863969885937],[21.001340336873405,-103.301744537105]];
+        var layer_dem_0 = new L.imageOverlay(img_dem_0,
+                                              img_bounds_dem_0,
+                                              {pane: 'pane_dem_0'});
+        bounds_group.addLayer(layer_dem_0);
+        map.addLayer(layer_dem_0);
+        map.createPane('pane_CartoLight_1');
+        map.getPane('pane_CartoLight_1').style.zIndex = 401;
+        var layer_CartoLight_1 = L.tileLayer('https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.pn', {
+            pane: 'pane_CartoLight_1',
+            opacity: 0.7659999999999999,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+        });
+        layer_CartoLight_1;
+        map.addLayer(layer_CartoLight_1);
+        function pop_LmiteMunicipaldeZapopan_3(feature, layer) {
+            var popupContent = '<table>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_LmiteMunicipaldeZapopan_3_0() {
+            return {
+                pane: 'pane_LmiteMunicipaldeZapopan_3',
+                opacity: 1,
+                color: 'rgba(52,52,52,0.9490196078431372)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1,
+                fillOpacity: 0,
+                interactive: false,
+            }
+        }
+        function style_LmiteMunicipaldeZapopan_3_1() {
+            return {
+                pane: 'pane_LmiteMunicipaldeZapopan_3',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,255,255,0.0)',
+                interactive: false,
+            }
+        }
+        map.createPane('pane_LmiteMunicipaldeZapopan_3');
+        map.getPane('pane_LmiteMunicipaldeZapopan_3').style.zIndex = 403;
+        map.getPane('pane_LmiteMunicipaldeZapopan_3').style['mix-blend-mode'] = 'normal';
+        var layer_LmiteMunicipaldeZapopan_3 = new L.geoJson.multiStyle(json_LmiteMunicipaldeZapopan_3, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_LmiteMunicipaldeZapopan_3',
+            layerName: 'layer_LmiteMunicipaldeZapopan_3',
+            pane: 'pane_LmiteMunicipaldeZapopan_3',
+            onEachFeature: pop_LmiteMunicipaldeZapopan_3,
+            styles: [style_LmiteMunicipaldeZapopan_3_0,style_LmiteMunicipaldeZapopan_3_1,]
+        });
+        bounds_group.addLayer(layer_LmiteMunicipaldeZapopan_3);
+        map.addLayer(layer_LmiteMunicipaldeZapopan_3);
+        function pop_InundacinporLluviaSevera_4(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Clave_Geoe'] !== null ? autolinker.link(String(feature.properties['Clave_Geoe']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fen�meno_P'] !== null ? autolinker.link(String(feature.properties['Fen�meno_P']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Tipo_de_Ev'] !== null ? autolinker.link(String(feature.properties['Tipo_de_Ev']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Folio'] !== null ? autolinker.link(String(feature.properties['Folio']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fen�meno_C'] !== null ? autolinker.link(String(feature.properties['Fen�meno_C']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Nombre_Com'] !== null ? autolinker.link(String(feature.properties['Nombre_Com']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Magnitud_U'] !== null ? autolinker.link(String(feature.properties['Magnitud_U']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Magnitud_V'] !== null ? autolinker.link(String(feature.properties['Magnitud_V']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Duraci�n_d'] !== null ? autolinker.link(String(feature.properties['Duraci�n_d']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Intensidad'] !== null ? autolinker.link(String(feature.properties['Intensidad']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Intensida0'] !== null ? autolinker.link(String(feature.properties['Intensida0']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Poblaci�n_'] !== null ? autolinker.link(String(feature.properties['Poblaci�n_']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Bien_Afect'] !== null ? autolinker.link(String(feature.properties['Bien_Afect']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Bien_Afec0'] !== null ? autolinker.link(String(feature.properties['Bien_Afec0']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Infraestru'] !== null ? autolinker.link(String(feature.properties['Infraestru']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Infraestr0'] !== null ? autolinker.link(String(feature.properties['Infraestr0']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Personal_A'] !== null ? autolinker.link(String(feature.properties['Personal_A']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Unidades_A'] !== null ? autolinker.link(String(feature.properties['Unidades_A']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Dependenci'] !== null ? autolinker.link(String(feature.properties['Dependenci']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Tipo_de_Da'] !== null ? autolinker.link(String(feature.properties['Tipo_de_Da']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Metodolog�'] !== null ? autolinker.link(String(feature.properties['Metodolog�']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fuente'] !== null ? autolinker.link(String(feature.properties['Fuente']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fecha'] !== null ? autolinker.link(String(feature.properties['Fecha']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Simbolog�a'] !== null ? autolinker.link(String(feature.properties['Simbolog�a']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_InundacinporLluviaSevera_4_0() {
+            return {
+                pane: 'pane_InundacinporLluviaSevera_4',
+                opacity: 1,
+                color: 'rgba(255,35,35,1.0)',
+                dashArray: '5.0,1.0',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,165,0,0.16862745098039217)',
+                interactive: false,
+            }
+        }
+        map.createPane('pane_InundacinporLluviaSevera_4');
+        map.getPane('pane_InundacinporLluviaSevera_4').style.zIndex = 404;
+        map.getPane('pane_InundacinporLluviaSevera_4').style['mix-blend-mode'] = 'normal';
+        var layer_InundacinporLluviaSevera_4 = new L.geoJson(json_InundacinporLluviaSevera_4, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_InundacinporLluviaSevera_4',
+            layerName: 'layer_InundacinporLluviaSevera_4',
+            pane: 'pane_InundacinporLluviaSevera_4',
+            onEachFeature: pop_InundacinporLluviaSevera_4,
+            style: style_InundacinporLluviaSevera_4_0,
+        });
+        bounds_group.addLayer(layer_InundacinporLluviaSevera_4);
+        map.addLayer(layer_InundacinporLluviaSevera_4);
+        function pop_ZonasHistricasdeInundacin_5(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Clave_Geoe'] !== null ? autolinker.link(String(feature.properties['Clave_Geoe']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fen�meno_P'] !== null ? autolinker.link(String(feature.properties['Fen�meno_P']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Tipo_de_Ev'] !== null ? autolinker.link(String(feature.properties['Tipo_de_Ev']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Folio'] !== null ? autolinker.link(String(feature.properties['Folio']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fen�meno_C'] !== null ? autolinker.link(String(feature.properties['Fen�meno_C']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Nombre_Com'] !== null ? autolinker.link(String(feature.properties['Nombre_Com']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Magnitud_U'] !== null ? autolinker.link(String(feature.properties['Magnitud_U']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Magnitud_V'] !== null ? autolinker.link(String(feature.properties['Magnitud_V']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Duraci�n_d'] !== null ? autolinker.link(String(feature.properties['Duraci�n_d']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Intensidad'] !== null ? autolinker.link(String(feature.properties['Intensidad']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Intensida0'] !== null ? autolinker.link(String(feature.properties['Intensida0']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Poblaci�n_'] !== null ? autolinker.link(String(feature.properties['Poblaci�n_']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Bien_Afect'] !== null ? autolinker.link(String(feature.properties['Bien_Afect']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Bien_Afec0'] !== null ? autolinker.link(String(feature.properties['Bien_Afec0']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Infraestru'] !== null ? autolinker.link(String(feature.properties['Infraestru']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Infraestr0'] !== null ? autolinker.link(String(feature.properties['Infraestr0']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Personal_A'] !== null ? autolinker.link(String(feature.properties['Personal_A']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Unidades_A'] !== null ? autolinker.link(String(feature.properties['Unidades_A']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Dependenci'] !== null ? autolinker.link(String(feature.properties['Dependenci']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Tipo_de_Da'] !== null ? autolinker.link(String(feature.properties['Tipo_de_Da']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Metodolog�'] !== null ? autolinker.link(String(feature.properties['Metodolog�']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fuente'] !== null ? autolinker.link(String(feature.properties['Fuente']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fecha'] !== null ? autolinker.link(String(feature.properties['Fecha']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Simbolog�a'] !== null ? autolinker.link(String(feature.properties['Simbolog�a']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_ZonasHistricasdeInundacin_5_0() {
+            return {
+                pane: 'pane_ZonasHistricasdeInundacin_5',
+                opacity: 1,
+                color: 'rgba(255,35,35,1.0)',
+                dashArray: '5.0,1.0',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(150,150,150,0.0)',
+                interactive: false,
+            }
+        }
+        map.createPane('pane_ZonasHistricasdeInundacin_5');
+        map.getPane('pane_ZonasHistricasdeInundacin_5').style.zIndex = 405;
+        map.getPane('pane_ZonasHistricasdeInundacin_5').style['mix-blend-mode'] = 'normal';
+        var layer_ZonasHistricasdeInundacin_5 = new L.geoJson(json_ZonasHistricasdeInundacin_5, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_ZonasHistricasdeInundacin_5',
+            layerName: 'layer_ZonasHistricasdeInundacin_5',
+            pane: 'pane_ZonasHistricasdeInundacin_5',
+            onEachFeature: pop_ZonasHistricasdeInundacin_5,
+            style: style_ZonasHistricasdeInundacin_5_0,
+        });
+        bounds_group.addLayer(layer_ZonasHistricasdeInundacin_5);
+        map.addLayer(layer_ZonasHistricasdeInundacin_5);
+        function pop_RiesgoAltodeInundacin_6(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Clave_Geoe'] !== null ? autolinker.link(String(feature.properties['Clave_Geoe']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fen�meno_P'] !== null ? autolinker.link(String(feature.properties['Fen�meno_P']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Tipo_de_Ev'] !== null ? autolinker.link(String(feature.properties['Tipo_de_Ev']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Folio'] !== null ? autolinker.link(String(feature.properties['Folio']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fen�meno_C'] !== null ? autolinker.link(String(feature.properties['Fen�meno_C']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Nombre_Com'] !== null ? autolinker.link(String(feature.properties['Nombre_Com']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Magnitud_U'] !== null ? autolinker.link(String(feature.properties['Magnitud_U']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Magnitud_V'] !== null ? autolinker.link(String(feature.properties['Magnitud_V']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Duraci�n_d'] !== null ? autolinker.link(String(feature.properties['Duraci�n_d']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Intensidad'] !== null ? autolinker.link(String(feature.properties['Intensidad']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Intensida0'] !== null ? autolinker.link(String(feature.properties['Intensida0']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Poblaci�n_'] !== null ? autolinker.link(String(feature.properties['Poblaci�n_']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Bien_Afect'] !== null ? autolinker.link(String(feature.properties['Bien_Afect']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Bien_Afec0'] !== null ? autolinker.link(String(feature.properties['Bien_Afec0']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Infraestru'] !== null ? autolinker.link(String(feature.properties['Infraestru']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Infraestr0'] !== null ? autolinker.link(String(feature.properties['Infraestr0']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Personal_A'] !== null ? autolinker.link(String(feature.properties['Personal_A']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Unidades_A'] !== null ? autolinker.link(String(feature.properties['Unidades_A']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Dependenci'] !== null ? autolinker.link(String(feature.properties['Dependenci']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Tipo_de_Da'] !== null ? autolinker.link(String(feature.properties['Tipo_de_Da']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Metodolog�'] !== null ? autolinker.link(String(feature.properties['Metodolog�']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fuente'] !== null ? autolinker.link(String(feature.properties['Fuente']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fecha'] !== null ? autolinker.link(String(feature.properties['Fecha']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Simbolog�a'] !== null ? autolinker.link(String(feature.properties['Simbolog�a']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_RiesgoAltodeInundacin_6_0() {
+            return {
+                pane: 'pane_RiesgoAltodeInundacin_6',
+                opacity: 1,
+                color: 'rgba(255,35,35,1.0)',
+                dashArray: '5.0,1.0',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(210,0,39,0.5019607843137255)',
+                interactive: false,
+            }
+        }
+        map.createPane('pane_RiesgoAltodeInundacin_6');
+        map.getPane('pane_RiesgoAltodeInundacin_6').style.zIndex = 406;
+        map.getPane('pane_RiesgoAltodeInundacin_6').style['mix-blend-mode'] = 'normal';
+        var layer_RiesgoAltodeInundacin_6 = new L.geoJson(json_RiesgoAltodeInundacin_6, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_RiesgoAltodeInundacin_6',
+            layerName: 'layer_RiesgoAltodeInundacin_6',
+            pane: 'pane_RiesgoAltodeInundacin_6',
+            onEachFeature: pop_RiesgoAltodeInundacin_6,
+            style: style_RiesgoAltodeInundacin_6_0,
+        });
+        bounds_group.addLayer(layer_RiesgoAltodeInundacin_6);
+        map.addLayer(layer_RiesgoAltodeInundacin_6);
+        function pop_Vulnerabilidadfsicaanteinundaciones_7(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Vulnerabil'] !== null ? autolinker.link(String(feature.properties['Vulnerabil']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Superficie'] !== null ? autolinker.link(String(feature.properties['Superficie']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fuente'] !== null ? autolinker.link(String(feature.properties['Fuente']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Vulnerabilidadfsicaanteinundaciones_7_0(feature) {
+            switch(String(feature.properties['Vulnerabil'])) {
+                case 'Muy alto':
+                    return {
+                pane: 'pane_Vulnerabilidadfsicaanteinundaciones_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(8,81,156,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Alto':
+                    return {
+                pane: 'pane_Vulnerabilidadfsicaanteinundaciones_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(49,130,189,1.0)',
+                interactive: false,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_Vulnerabilidadfsicaanteinundaciones_7');
+        map.getPane('pane_Vulnerabilidadfsicaanteinundaciones_7').style.zIndex = 407;
+        map.getPane('pane_Vulnerabilidadfsicaanteinundaciones_7').style['mix-blend-mode'] = 'normal';
+        var layer_Vulnerabilidadfsicaanteinundaciones_7 = new L.geoJson(json_Vulnerabilidadfsicaanteinundaciones_7, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_Vulnerabilidadfsicaanteinundaciones_7',
+            layerName: 'layer_Vulnerabilidadfsicaanteinundaciones_7',
+            pane: 'pane_Vulnerabilidadfsicaanteinundaciones_7',
+            onEachFeature: pop_Vulnerabilidadfsicaanteinundaciones_7,
+            style: style_Vulnerabilidadfsicaanteinundaciones_7_0,
+        });
+        bounds_group.addLayer(layer_Vulnerabilidadfsicaanteinundaciones_7);
+        map.addLayer(layer_Vulnerabilidadfsicaanteinundaciones_7);
+        function pop_Corredor_8(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Corredor</th>\
+                        <td class="visible-with-data" id="Corredor">' + (feature.properties['Corredor'] !== null ? autolinker.link(String(feature.properties['Corredor']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Corredor_8_0() {
+            return {
+                pane: 'pane_Corredor_8',
+                opacity: 1,
+                color: 'rgba(112,219,30,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Corredor_8');
+        map.getPane('pane_Corredor_8').style.zIndex = 408;
+        map.getPane('pane_Corredor_8').style['mix-blend-mode'] = 'normal';
+        var layer_Corredor_8 = new L.geoJson(json_Corredor_8, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Corredor_8',
+            layerName: 'layer_Corredor_8',
+            pane: 'pane_Corredor_8',
+            onEachFeature: pop_Corredor_8,
+            style: style_Corredor_8_0,
+        });
+        bounds_group.addLayer(layer_Corredor_8);
+        map.addLayer(layer_Corredor_8);
+        function pop_Crucero_9(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Descripción</th>\
+                        <td class="visible-with-data" id="Descripción">' + (feature.properties['Descripción'] !== null ? autolinker.link(String(feature.properties['Descripción']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Crucero_9_0() {
+            return {
+                pane: 'pane_Crucero_9',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/Crucero_9.svg',
+            iconSize: [35.72, 35.72]
+        }),
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Crucero_9');
+        map.getPane('pane_Crucero_9').style.zIndex = 409;
+        map.getPane('pane_Crucero_9').style['mix-blend-mode'] = 'normal';
+        var layer_Crucero_9 = new L.geoJson(json_Crucero_9, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Crucero_9',
+            layerName: 'layer_Crucero_9',
+            pane: 'pane_Crucero_9',
+            onEachFeature: pop_Crucero_9,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.marker(latlng, style_Crucero_9_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_Crucero_9);
+        map.addLayer(layer_Crucero_9);
+        var overlaysTree = [
+            {label: '<img src="legend/Crucero_9.png" /> Crucero', layer: layer_Crucero_9},
+            {label: '<img src="legend/Corredor_8.png" /> Corredor', layer: layer_Corredor_8},
+            {label: 'Vulnerabilidad física ante inundaciones<br /><table><tr><td style="text-align: center;"><img src="legend/Vulnerabilidadfsicaanteinundaciones_7_Muyalto0.png" /></td><td>Muy alto</td></tr><tr><td style="text-align: center;"><img src="legend/Vulnerabilidadfsicaanteinundaciones_7_Alto1.png" /></td><td>Alto</td></tr></table>', layer: layer_Vulnerabilidadfsicaanteinundaciones_7},
+            {label: '<img src="legend/RiesgoAltodeInundacin_6.png" /> Riesgo Alto de Inundación', layer: layer_RiesgoAltodeInundacin_6},
+            {label: '<img src="legend/ZonasHistricasdeInundacin_5.png" /> Zonas Históricas de Inundación', layer: layer_ZonasHistricasdeInundacin_5},
+            {label: '<img src="legend/InundacinporLluviaSevera_4.png" /> Inundación por Lluvia Severa', layer: layer_InundacinporLluviaSevera_4},
+            {label: '<img src="legend/LmiteMunicipaldeZapopan_3.png" /> Límite Municipal de Zapopan', layer: layer_LmiteMunicipaldeZapopan_3},
+            {label: "Carto Light", layer: layer_CartoLight_1},
+            {label: "dem", layer: layer_dem_0},]
+        var lay = L.control.layers.tree(null, overlaysTree,{
+            //namedToggle: true,
+            //selectorBack: false,
+            //closedSymbol: '&#8862; &#x1f5c0;',
+            //openedSymbol: '&#8863; &#x1f5c1;',
+            //collapseAll: 'Collapse all',
+            //expandAll: 'Expand all',
+            collapsed: true,
+        });
+        lay.addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_Crucero_9,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'Descripción'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        L.ImageOverlay.include({
+            getBounds: function () {
+                return this._bounds;
+            }
+        });
+        resetLabels([layer_Crucero_9]);
+        map.on("zoomend", function(){
+            resetLabels([layer_Crucero_9]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_Crucero_9]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_Crucero_9]);
+        });
+        </script>
+    </body>
+</html>
